@@ -1,4 +1,4 @@
-# QueryForge ![Valmet](img/valmet_logo_nobg.png)
+# QueryForge ![Valmet](assets/img/valmet_logo_nobg.png)
 ___
 Produced by: [VII @ Valmet](https://www.valmet.com/automation/industrial-internet/)
 
