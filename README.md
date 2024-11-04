@@ -6,7 +6,6 @@ Produced by: [VII @ Valmet](https://www.valmet.com/automation/industrial-interne
 ___
 
 To Do:
-- Refactor code from main
 - Add RAG
 - Add instructions for RAG
 - Tie Ollama Together with bash script
