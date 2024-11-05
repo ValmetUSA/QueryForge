@@ -21,8 +21,15 @@ func main() {
 
 	input := widget.NewEntry()
 	input.SetPlaceHolder("Type your question here...")
-	output := widget.NewLabel("Response will appear here.")
-	output.Wrapping = fyne.TextWrapWord
+
+	// Create a MultiLineEntry for output
+	output := widget.NewMultiLineEntry()
+	output.SetPlaceHolder("Response will appear here.")
+
+	// Create a scroll container for the output to enable vertical scrolling
+	scrollOutput := container.NewVScroll(output)
+	scrollOutput.SetMinSize(fyne.NewSize(0, 100)) // Set a minimum size for the scroll area
+
 	progress := widget.NewProgressBar()
 	progress.Hide()
 
@@ -54,7 +61,7 @@ func main() {
 		input,
 		askButton,
 		progress,
-		output,
+		scrollOutput,
 	)
 	w.SetContent(content)
 	w.ShowAndRun()
