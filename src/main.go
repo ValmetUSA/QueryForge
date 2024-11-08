@@ -7,13 +7,15 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
 
 func main() {
 	a := app.New()
 	w := a.NewWindow("Valmet QueryForge")
-	w.Resize(fyne.NewSize(400, 300))
+	w.Resize(fyne.NewSize(550, 500))
 
 	image := canvas.NewImageFromFile("valmet_logo_small.png")
 	image.FillMode = canvas.ImageFillOriginal
@@ -57,12 +59,52 @@ func main() {
 		}()
 	})
 
+	// About button to span the top of the window
+	aboutButton := widget.NewButtonWithIcon("About", theme.InfoIcon(), func() {
+		dialog.ShowInformation("About", "QueryForge by VII @ Valmet, Inc.\n\nA lightweight app for edge device RAG document searches.\n\nBuilt with ❤️ by Valmet USA - Atlanta, Georgia.", w)
+	})
+
+	// Folder picker for selecting a directory to run the RAG search within
+	folderPicker := widget.NewButton("Select Folder (PDF FILES ONLY)", func() {
+		dialog.ShowFolderOpen(func(uri fyne.ListableURI, err error) {
+			if err != nil {
+				dialog.ShowError(err, w)
+				return
+			}
+			input.SetText(uri.String())
+		}, w)
+	})
+
+	resetButton := widget.NewButton("Clear All", func() {
+		input.SetText("")
+		output.SetText("")
+	})
+
+	// TODO: Implement a toolbar with cut, copy, and paste actions
+	toolbar := widget.NewToolbar(
+		widget.NewToolbarAction(theme.ContentCutIcon(), func() {}),
+		widget.NewToolbarAction(theme.ContentCopyIcon(), func() {}),
+		widget.NewToolbarAction(theme.ContentPasteIcon(), func() {}),
+	)
+
 	content := container.NewVBox(
 		image,
 		input,
-		askButton,
+		container.NewCenter(
+			container.NewHBox(
+				folderPicker,
+				askButton,
+				resetButton,
+			),
+		),
 		progress,
+		container.NewCenter(
+			container.NewHBox(
+				toolbar,
+			),
+		),
 		scrollOutput,
+		aboutButton,
 	)
 	w.SetContent(content)
 	w.ShowAndRun()
