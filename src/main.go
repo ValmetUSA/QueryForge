@@ -22,13 +22,14 @@ func main() {
 	input := widget.NewEntry()
 	input.SetPlaceHolder("Type your question here...")
 
-	// Create a MultiLineEntry for output
+	// Create a MultiLineEntry for output with text wrapping enabled
 	output := widget.NewMultiLineEntry()
 	output.SetPlaceHolder("Response will appear here.")
+	output.Wrapping = fyne.TextWrapWord // Set text wrapping to wrap by words
 
-	// Create a scroll container for the output to enable vertical scrolling
+	// Create a vertical scroll container for the output
 	scrollOutput := container.NewVScroll(output)
-	scrollOutput.SetMinSize(fyne.NewSize(0, 100)) // Set a minimum size for the scroll area
+	scrollOutput.SetMinSize(fyne.NewSize(380, 200)) // Set a minimum size for the scroll area
 
 	progress := widget.NewProgressBar()
 	progress.Hide()
@@ -41,17 +42,20 @@ func main() {
 		}
 
 		progress.Show()
+		progress.SetValue(0) // Start the progress bar at 0
 
 		msg := Message{Role: "user", Content: question}
 		req := Request{Model: "llama3.2", Stream: false, Messages: []Message{msg}}
 
 		go func() {
+			progress.SetValue(0.5) // Update halfway through while waiting for a response
 			resp, err := talkToOllama(defaultOllamaURL, req)
 			if err != nil {
 				output.SetText(fmt.Sprintf("Error: %v", err))
 			} else {
 				output.SetText(resp.Message.Content)
 			}
+			progress.SetValue(1.0) // Set progress to 100% when done
 			progress.Hide()
 		}()
 	})
