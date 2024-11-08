@@ -44,18 +44,15 @@ func main() {
 		progress.Show()
 		progress.SetValue(0) // Start the progress bar at 0
 
-		msg := Message{Role: "user", Content: question}
-		req := Request{Model: "llama3.2", Stream: false, Messages: []Message{msg}}
-
 		go func() {
-			progress.SetValue(0.5) // Update halfway through while waiting for a response
-			resp, err := talkToOllama(defaultOllamaURL, req)
+			progress.SetValue(0.5)
+			Response, err := talkToOllama(question) // Pass question directly without using a pointer
 			if err != nil {
 				output.SetText(fmt.Sprintf("Error: %v", err))
 			} else {
-				output.SetText(resp.Message.Content)
+				output.SetText(Response) // Set text directly from the returned string
 			}
-			progress.SetValue(1.0) // Set progress to 100% when done
+			progress.SetValue(1.0)
 			progress.Hide()
 		}()
 	})
