@@ -65,7 +65,7 @@ func main() {
 	})
 
 	// Folder picker for selecting a directory to run the RAG search within
-	folderPicker := widget.NewButton("Select Folder (PDF FILES ONLY)", func() {
+	folderPicker := widget.NewButton("Select Folder", func() {
 		dialog.ShowFolderOpen(func(uri fyne.ListableURI, err error) {
 			if err != nil {
 				dialog.ShowError(err, w)
