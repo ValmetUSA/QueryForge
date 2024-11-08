@@ -6,8 +6,8 @@ Produced by: [VII @ Valmet](https://www.valmet.com/automation/industrial-interne
 ___
 
 To Do:
-- [] Add RAG
-- [] Finish folder picker with RAG
-- [] Finish front end 
-- [] Write script to setup ollama
-- [] Finish documentation on GitHub
+- [ ] Add RAG
+- [ ] Finish folder picker with RAG
+- [ ] Finish front end 
+- [ ] Write script to setup ollama
+- [ ] Finish documentation on GitHub
