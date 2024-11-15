@@ -1,54 +1,33 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"net/http"
+	"context"
+	"strings"
+
+	"github.com/henomis/lingoose/llm/ollama"
+	"github.com/henomis/lingoose/thread"
 )
 
-const defaultOllamaURL = "http://localhost:11434/api/chat"
+const defaultOllamaURL = "http://localhost:11434/api"
+const ollamaModelName = "llama3.2"
 
-func talkToOllama(url string, ollamaReq Request) (*Response, error) {
-	js, err := json.Marshal(&ollamaReq)
+func talkToOllama(request string) (string, error) {
+	ollamaThread := thread.New()
+
+	ollamaThread.AddMessage(thread.NewUserMessage().AddContent(
+		thread.NewTextContent(request),
+	))
+
+	var responseBuilder strings.Builder
+	err := ollama.New().WithEndpoint(defaultOllamaURL).WithModel(ollamaModelName).
+		WithStream(func(s string) {
+			//fmt.Print(s)
+			responseBuilder.WriteString(s) // Append each streamed response chunk to the builder
+		}).Generate(context.Background(), ollamaThread)
+
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal request: %v", err)
+		return "", err
 	}
 
-	client := http.Client{}
-	httpReq, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(js))
-	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %v", err)
-	}
-	httpReq.Header.Set("Content-Type", "application/json")
-
-	httpResp, err := client.Do(httpReq)
-	if err != nil {
-		return nil, fmt.Errorf("failed to send request: %v", err)
-	}
-	defer httpResp.Body.Close()
-
-	var fullContent string
-	decoder := json.NewDecoder(httpResp.Body)
-	for {
-		var part Response
-		if err := decoder.Decode(&part); err != nil {
-			break
-		}
-		fullContent += part.Message.Content
-
-		if part.Done {
-			break
-		}
-	}
-
-	if fullContent == "" {
-		return nil, fmt.Errorf("no response content received from server")
-	}
-
-	return &Response{
-		Model:   ollamaReq.Model,
-		Message: Message{Role: "assistant", Content: fullContent},
-		Done:    true,
-	}, nil
+	return responseBuilder.String(), nil // Return the full response as a string
 }
