@@ -15,7 +15,7 @@ import (
 func main() {
 	a := app.New()
 	w := a.NewWindow("Valmet QueryForge")
-	w.Resize(fyne.NewSize(550, 500))
+	w.Resize(fyne.NewSize(200, 500))
 
 	image := canvas.NewImageFromFile("valmet_logo_small.png")
 	image.FillMode = canvas.ImageFillOriginal
@@ -36,7 +36,7 @@ func main() {
 	progress := widget.NewProgressBar()
 	progress.Hide()
 
-	askButton := widget.NewButton("Ask", func() {
+	askButton := widget.NewButton("Query the AI", func() {
 		question := input.Text
 		if question == "" {
 			output.SetText("Please enter a question.")
@@ -80,11 +80,16 @@ func main() {
 		output.SetText("")
 	})
 
-	// TODO: Implement a toolbar with cut, copy, and paste actions
+	// Toolbar with copy, and paste actions
 	toolbar := widget.NewToolbar(
-		widget.NewToolbarAction(theme.ContentCutIcon(), func() {}),
-		widget.NewToolbarAction(theme.ContentCopyIcon(), func() {}),
-		widget.NewToolbarAction(theme.ContentPasteIcon(), func() {}),
+		widget.NewToolbarAction(theme.ContentCopyIcon(), func() {
+			clipboard := w.Clipboard()
+			clipboard.SetContent(output.Text) // Save text to clipboard
+		}),
+		widget.NewToolbarAction(theme.ContentPasteIcon(), func() {
+			clipboard := w.Clipboard()
+			input.SetText(input.Text + clipboard.Content()) // Append clipboard text to entry
+		}),
 	)
 
 	content := container.NewVBox(
@@ -94,13 +99,13 @@ func main() {
 			container.NewHBox(
 				folderPicker,
 				askButton,
-				resetButton,
 			),
 		),
 		progress,
 		container.NewCenter(
 			container.NewHBox(
 				toolbar,
+				resetButton,
 			),
 		),
 		scrollOutput,
