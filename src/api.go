@@ -13,7 +13,7 @@ import (
 	"github.com/parakeet-nest/parakeet/llm"
 )
 
-// Sauced from here: https://github.com/parakeet-nest/parakeet/tree/main/examples/23-rag-with-chunker
+// Some of this was sauced from here: https://github.com/parakeet-nest/parakeet/tree/main/examples/23-rag-with-chunker
 
 const defaultOllamaURL = "http://localhost:11434"
 const ollamaModelName = "llama3.2:3b"
