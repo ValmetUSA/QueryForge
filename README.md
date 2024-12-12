@@ -11,12 +11,11 @@ ___
 ## 📖 Table of Contents:
 * [Project Background](#-project-background)
 * [How to Run](#-how-to-run)
-* [Building From Source](#-building-from-source)
+* [Building From Source](#-building-from-source-advanced-users-only)
 
 ---
 
 ## 🤓 Project Background
-
 QueryForge is a lightweight, secure, and efficient local AI-driven RAG (Retrieval Augmented Generation) chat application designed specifically for conversations involving sensitive data. Built entirely in the Go programming language, QueryForge offers a robust, easy-to-use interface for querying a local AI model (on Ollama) without relying on cloud-based services, ensuring privacy and security for users dealing with confidential information.
 
 This project was developed by [Valmet of North America](https://www.valmet.com). Valmet is an international automation and services company that specializes in providing solutions to industries such as pulp, paper, and energy. With a strong focus on advancing sustainable practices, Valmet offers a range of technologies and services aimed at improving operational efficiency and environmental performance. Their expertise spans from process automation to machine vision systems, and they work with clients globally to implement cutting-edge solutions that drive innovation.
@@ -46,7 +45,7 @@ ___
 TBD
 ____
 
-## Building From Source (Advanced Users Only!)
+## 👷‍♂️ Building From Source (Advanced Users Only!)
 > [!IMPORTANT]
 > Before you start - make sure you have the [GoLang compiler downloaded and installed for your operating system](https://go.dev/doc/install)!
 
