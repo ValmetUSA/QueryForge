@@ -15,19 +15,27 @@ import (
 
 // Some of this was sauced from here: https://github.com/parakeet-nest/parakeet/tree/main/examples/23-rag-with-chunker
 
+// Constant declarations
 const defaultOllamaURL = "http://localhost:11434"
-const ollamaModelName = "llama3.2:3b"
-const embeddingModelName = "all-minilm:33m"
+
+// Variable declarations - these can be changed by the user through the use of the setAIfromUserPrefs function and GUI
+var ollamaModelName string = "llama3.2:3b"
+var embeddingModelName string = "all-minilm:33m"
 
 func talkToOllama(userContent string) (string, error) {
 
+	// Create a store to save the embeddings
+	// Keep it in this function to let the garbage collector clean it up
+	// our users will likely only use this function once to get their answer
 	store := embeddings.MemoryVectorStore{
 		Records: make(map[string]llm.VectorRecord),
 	}
 
+	// Read from here how to do that: https://parakeet-nest.github.io/parakeet/embeddings/
 	rulesContent, err := content.ReadTextFile("./test_doc.txt")
 	if err != nil {
-		log.Fatalln("😡:", err)
+		log.Printf("❌1: Failed to read document: %v", err)
+		return "", fmt.Errorf("failed to read document: %w", err)
 	}
 	chunks := content.ChunkText(rulesContent, 500, 200)
 
@@ -43,10 +51,10 @@ func talkToOllama(userContent string) (string, error) {
 			strconv.Itoa(idx),
 		)
 		if err != nil {
-			fmt.Println("😡:", err)
-		} else {
-			store.Save(embedding)
+			log.Printf("❌2: Failed to create embedding for document %d: %v", idx, err)
+			continue
 		}
+		store.Save(embedding)
 	}
 
 	systemContent := `You are a helpful assistant by the name of PaperPal.
@@ -67,7 +75,8 @@ func talkToOllama(userContent string) (string, error) {
 		"question",
 	)
 	if err != nil {
-		log.Fatalln("😡:", err)
+		log.Printf("❌3: Failed to create embedding from question, is Ollama on? - %v", err)
+		return "", fmt.Errorf("Failed to create embedding from question, is Ollama on? 🦙 \n\nError Data: %w", err)
 	}
 	fmt.Println("🔎 searching for similarity...")
 
@@ -78,7 +87,7 @@ func talkToOllama(userContent string) (string, error) {
 	documentsContent := embeddings.GenerateContentFromSimilarities(similarities)
 
 	options := llm.SetOptions(map[string]interface{}{
-		option.Temperature:   0.0,
+		option.Temperature:   0.7,
 		option.RepeatLastN:   2,
 		option.RepeatPenalty: 2.0,
 		option.TopK:          10,
@@ -107,10 +116,16 @@ func talkToOllama(userContent string) (string, error) {
 		})
 
 	if err != nil {
-		log.Fatal("😡:", err)
-	} else {
-		return responseBuilder.String(), nil
+		log.Printf("❌4: Failed to get response: %v", err)
+		return responseBuilder.String(), fmt.Errorf("failed to get response: %w", err)
 	}
 
-	return "", nil
+	return responseBuilder.String(), nil
+}
+
+func setAIfromUserPrefs(selectedModel string, selectedEmbeddingModel string) {
+	ollamaModelName = selectedModel
+	embeddingModelName = selectedEmbeddingModel
+	fmt.Println("Selected model:", selectedModel)
+	fmt.Println("Selected embedding model:", selectedEmbeddingModel)
 }
