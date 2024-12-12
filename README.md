@@ -11,7 +11,7 @@ ___
 ## 📖 Table of Contents:
 * [Project Background](#-project-background)
 * [How to Run](#-how-to-run)
-* [Building From Source](#-building-from-source-advanced-users-only)
+* [Building From Source](#%EF%B8%8F-building-from-source-advanced-users-only)
 
 ---
 
