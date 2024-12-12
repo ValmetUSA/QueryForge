@@ -34,7 +34,7 @@ ___
 - Clipboard Integration: Copy and paste functionality is available directly from the toolbar, enhancing usability.
 - Simple Interface: Designed with an intuitive Fyne-based GUI for seamless interaction.
 
-## Underlying Code
+### Underlying Code
 The core application is written in Go and utilizes the Fyne GUI framework for creating a cross-platform desktop application. Here's an overview of some key components:
 - Fyne Framework: Used for creating the UI elements - it also ensures cross-platform compatibility.
 - Effortless AI Model Integration: The application queries an AI model in Ollama, which processes the input text and retrieves relevant responses. This keeps things simple for the end user, since Ollama handles model management - no AI interfacing is done manually by the user.
