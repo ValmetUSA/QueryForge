@@ -18,11 +18,11 @@ ___
 ## 🤓 Project Background
 QueryForge is a lightweight, secure, and efficient local AI-driven RAG (Retrieval Augmented Generation) chat application designed specifically for conversations involving sensitive data. Built entirely in the Go programming language, QueryForge offers a robust, easy-to-use interface for querying a local AI model (on Ollama) without relying on cloud-based services, ensuring privacy and security for users dealing with confidential information.
 
-This project was developed by [Valmet of North America](https://www.valmet.com). Valmet is an international automation and services company that specializes in providing solutions to industries such as pulp, paper, and energy. With a strong focus on advancing sustainable practices, Valmet offers a range of technologies and services aimed at improving operational efficiency and environmental performance. Their expertise spans from process automation to machine vision systems, and they work with clients globally to implement cutting-edge solutions that drive innovation.
+This project was developed by [Valmet of North America](https://www.valmet.com), under the [Valmet Industrial Internet](https://www.valmet.com/automation/industrial-internet/) division. Valmet is an international automation and services company that specializes in providing solutions to industries such as pulp, paper, and energy. With a strong focus on advancing sustainable practices, Valmet offers a range of technologies and services aimed at improving operational efficiency and environmental performance. Our expertise spans from process automation to machine vision systems, and we work with clients globally to implement cutting-edge solutions that drive innovation forward.
 
 Valmet’s commitment to integrating advanced technologies, such as artificial intelligence, with traditional industries allows them to support customers in transforming their operations. The development of QueryForge is part of Valmet's ongoing efforts to explore new frontiers in automation and AI applications, particularly in sectors that require high levels of data privacy and security. By focusing on local, private AI-driven solutions, Valmet aims to provide businesses with powerful tools for managing sensitive data while maintaining complete control over the information flow.
 
-Valmet of North America is based in Atlanta, Georgia, and is part of the broader Valmet global network, which itself spans over 30 countries worldwide.
+#### Valmet of North America is based in Atlanta, Georgia, and is part of the broader Valmet global network, which itself spans over 30 countries worldwide.
 ___
 
 ### Features:
