@@ -74,5 +74,5 @@ To Do (Desciption, % of entire project):
 - [x] Add RAG - 30%
 - [x] Finish front end - 20%
 - [ ] Finish documentation on GitHub, [add binaries](https://medium.com/@vijay1.chauhan/create-executable-with-icon-in-golang-6f236995d8f6) - 5%
-- [ ] Finish file picker with RAG, along with adjustments - 10%
+- [ ] Finish file picker with RAG, [along with adjustments](https://parakeet-nest.github.io/parakeet/embeddings/) - 10%
 - [ ] Write script to setup Ollama - 5%
