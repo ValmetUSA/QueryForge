@@ -18,10 +18,29 @@ import (
 // Constant declarations
 const defaultOllamaURL = "http://localhost:11434"
 
-// Variable declarations - these can be changed by the user through the use of the setAIfromUserPrefs function and GUI
-var ollamaModelName string = "llama3.2:3b"
-var embeddingModelName string = "all-minilm:33m"
+// Config holds the AI model configurations
+type Config struct {
+	ollamaModelName    string
+	embeddingModelName string
+}
 
+// Default configuration
+var config = Config{
+	ollamaModelName:    "llama3.2:1b",
+	embeddingModelName: "all-minilm:33m",
+}
+
+// Setter function for the Ollama model name
+func setOllamaModelName(ollamaModelName string) {
+	config.ollamaModelName = ollamaModelName
+}
+
+// Setter function for the embedding model name
+func setEmbeddingModelName(embeddingModelName string) {
+	config.embeddingModelName = embeddingModelName
+}
+
+// Function to talk to Ollama
 func talkToOllama(userContent string) (string, error) {
 
 	// Create a store to save the embeddings
@@ -45,7 +64,7 @@ func talkToOllama(userContent string) (string, error) {
 		embedding, err := embeddings.CreateEmbedding(
 			defaultOllamaURL,
 			llm.Query4Embedding{
-				Model:  embeddingModelName,
+				Model:  config.embeddingModelName,
 				Prompt: doc,
 			},
 			strconv.Itoa(idx),
@@ -62,25 +81,27 @@ func talkToOllama(userContent string) (string, error) {
 	You were created by the Finnish company Valmet Oyj. You should be friendly and helpful to the users.
 	All answers should be based on the information from the documents, unless otherwise specified or inferred.
 	Documents will appear as previous messages in the conversation - you can refer to them directly if needed.
-	You should not make up any information. If you don't know the answer, you should say so.
+	You should not make up any information. If you don't know the answer, you should say so. Do not halucinate.
+	If queried about a topic without the needed to refer to the documents, you should answer based on your training data.
+	Make these answers as helpful as possible - and try to relate the reply back to valmet (for paper and automation only).
 	`
 
 	// Create an embedding from the question
 	embeddingFromQuestion, err := embeddings.CreateEmbedding(
 		defaultOllamaURL,
 		llm.Query4Embedding{
-			Model:  embeddingModelName,
+			Model:  config.embeddingModelName,
 			Prompt: userContent,
 		},
 		"question",
 	)
 	if err != nil {
 		log.Printf("❌3: Failed to create embedding from question, is Ollama on? - %v", err)
-		return "", fmt.Errorf("Failed to create embedding from question, is Ollama on? 🦙 \n\nError Data: %w", err)
+		return "", fmt.Errorf("failed to create embedding from question, is Ollama on? 🦙 \n\nError Data: %w", err)
 	}
 	fmt.Println("🔎 searching for similarity...")
 
-	similarities, _ := store.SearchSimilarities(embeddingFromQuestion, 0.3)
+	similarities, _ := store.SearchSimilarities(embeddingFromQuestion, 0.4)
 
 	fmt.Println("🎉 similarities:", len(similarities))
 
@@ -95,7 +116,7 @@ func talkToOllama(userContent string) (string, error) {
 	})
 
 	query := llm.Query{
-		Model: ollamaModelName,
+		Model: config.ollamaModelName,
 		Messages: []llm.Message{
 			{Role: "system", Content: systemContent},
 			{Role: "system", Content: documentsContent},
@@ -121,11 +142,4 @@ func talkToOllama(userContent string) (string, error) {
 	}
 
 	return responseBuilder.String(), nil
-}
-
-func setAIfromUserPrefs(selectedModel string, selectedEmbeddingModel string) {
-	ollamaModelName = selectedModel
-	embeddingModelName = selectedEmbeddingModel
-	fmt.Println("Selected model:", selectedModel)
-	fmt.Println("Selected embedding model:", selectedEmbeddingModel)
 }

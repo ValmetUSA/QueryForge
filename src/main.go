@@ -1,3 +1,7 @@
+// Writen by VII @ Valmet, Inc.
+// A lightweight app for edge device RAG document searches.
+// Developed by Kenneth Alexander Jenkins, Valmet USA - Atlanta, Georgia: 2024.
+// This file contains the main function for the Valmet QueryForge GUI application.
 package main
 
 import (
@@ -13,29 +17,34 @@ import (
 )
 
 func main() {
+	// Create a new Fyne application
 	a := app.New()
 	w := a.NewWindow("Valmet QueryForge")
-	w.Resize(fyne.NewSize(200, 500))
+	w.Resize(fyne.NewSize(200, 500)) // Edit this line to change the window size: width x height (pixels)
 
-	image := canvas.NewImageFromFile("valmet_logo_small.png")
+	// Load the Valmet logo image
+	image := canvas.NewImageFromFile("./build_assets/valmet_logo_small.png") // Edit this line to change the logo image path
 	image.FillMode = canvas.ImageFillOriginal
-	image.Resize(fyne.NewSize(75, 25))
+	image.Resize(fyne.NewSize(75, 25)) // Edit this line to change the logo image size (default is 75x25 pixels)
 
+	// Create an Entry for user input
 	input := widget.NewEntry()
-	input.SetPlaceHolder("Type your question here...")
+	input.SetPlaceHolder("Type your question here.")
 
 	// Create a MultiLineEntry for output with text wrapping enabled
 	output := widget.NewMultiLineEntry()
 	output.SetPlaceHolder("Response will appear here.")
-	output.Wrapping = fyne.TextWrapWord // Set text wrapping to wrap by words
+	output.Wrapping = fyne.TextWrapWord // Allow text wrapping to wrap at word boundaries
 
 	// Create a vertical scroll container for the output
 	scrollOutput := container.NewVScroll(output)
-	scrollOutput.SetMinSize(fyne.NewSize(380, 200)) // Set a minimum size for the scroll area
+	scrollOutput.SetMinSize(fyne.NewSize(380, 200)) // Sinimum size for the scroll area
 
+	// Progress bar to show the AI query progress
 	progress := widget.NewProgressBar()
 	progress.Hide()
 
+	// Ask button to query the AI
 	askButton := widget.NewButton("Query the AI", func() {
 		question := input.Text
 		if question == "" {
@@ -43,9 +52,13 @@ func main() {
 			return
 		}
 
+		// Show the progress bar and set the value to 0
 		progress.Show()
 		progress.SetValue(0) // Start the progress bar at 0
 
+		// Start a goroutine to query the AI and update the progress bar
+		// Note: This allows the UI to remain responsive while the AI is processing the question,
+		// thanks to multi-threading built into Go.
 		go func() {
 			progress.SetValue(0.5)
 			Response, err := talkToOllama(question) // Pass question directly without using a pointer
@@ -67,20 +80,23 @@ func main() {
 	// Settings button with menu containing checkboxes - Not yet functional
 	settingsButton := widget.NewButtonWithIcon("Settings", theme.SettingsIcon(), func() {
 
-		// Select base conversational model for the AI - select 3b by default
+		// Select base conversational model for the AI - selected 1b by default
 		pickBaseModel := widget.NewLabel("Base AI Model:")
-		selectModel := widget.NewSelect([]string{"llama3.2:1b", "llama3.2:3b"}, func(selected string) {
-			//fmt.Println("Selected model:", selected)
-		})
-		selectModel.Selected = "llama3.2:3b" // Set the default selection to "llama3.2:3b"
 
-		// Select embedding model for the AI - select 33m by default
+		// Select the model from the dropdown
+		selectModel := widget.NewSelect([]string{"llama3.2:1b", "llama3.2:3b"}, func(selected string) {
+			fmt.Println("Selected model:", selected)
+			setOllamaModelName(selected)
+		})
+
+		// Select the embedding model for the AI - selected 33m by default
 		pickEmbeddingModel := widget.NewLabel("Embedding Model:")
 		selectEmbeddingModel := widget.NewSelect([]string{"all-minilm:33m", "all-minilm:125m"}, func(selected string) {
-			//fmt.Println("Selected embedding model:", selected)
+			fmt.Println("Selected embedding model:", selected)
+			setEmbeddingModelName(selected)
 		})
-		selectEmbeddingModel.Selected = "all-minilm:33m" // Set the default selection to "all-minilm:33m"
 
+		// Function to set the AI model from user preferences
 		settingsMenu := container.NewVBox(
 			pickBaseModel,
 			selectModel,
@@ -88,7 +104,8 @@ func main() {
 			selectEmbeddingModel,
 		)
 
-		setAIfromUserPrefs(selectModel.Selected, selectEmbeddingModel.Selected)
+		// Show the settings menu with the selected AI models
+		//config.SetAIFromUserPrefs(selectModel.Selected, selectEmbeddingModel.Selected)
 		dialog.ShowCustom("Settings", "Close", settingsMenu, w)
 	})
 
@@ -99,15 +116,17 @@ func main() {
 				fmt.Println("Error opening folder:", err)
 			}
 			if uri == nil {
-				fmt.Println("No folder selected")
+				fmt.Println("No folder selected, RAG search will not be used.")
 				return
 			}
 
 			// Start the chunking process for the RAG search - TODO: Implement chunking calls
-			input.SetText(uri.String()) // Remove this line when the chunking process is implemented
+			//input.SetText(uri.String()) // Remove this line when the chunking process is implemented
+			fmt.Println("Selected folder:", uri.String())
 		}, w)
 	})
 
+	// Reset button to clear all text fields
 	resetButton := widget.NewButton("Clear All", func() {
 		input.SetText("")
 		output.SetText("")
@@ -125,6 +144,8 @@ func main() {
 		}),
 	)
 
+	// This is the main content of the window
+	// It is a VBox with the following elements:
 	content := container.NewVBox(
 		image,
 		input,
