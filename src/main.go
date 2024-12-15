@@ -22,8 +22,8 @@ func main() {
 	w := a.NewWindow("Valmet QueryForge")
 	w.Resize(fyne.NewSize(200, 500)) // Edit this line to change the window size: width x height (pixels)
 
-	// Load the Valmet logo image
-	image := canvas.NewImageFromFile("./build_assets/valmet_logo_small.png") // Edit this line to change the logo image path
+	// Load the Valmet logo image from a static resource
+	image := canvas.NewImageFromResource(resourceValmetlogosmallPng)
 	image.FillMode = canvas.ImageFillOriginal
 	image.Resize(fyne.NewSize(75, 25)) // Edit this line to change the logo image size (default is 75x25 pixels)
 
@@ -91,7 +91,7 @@ func main() {
 
 		// Select the embedding model for the AI - selected 33m by default
 		pickEmbeddingModel := widget.NewLabel("Embedding Model:")
-		selectEmbeddingModel := widget.NewSelect([]string{"all-minilm:33m", "all-minilm:125m"}, func(selected string) {
+		selectEmbeddingModel := widget.NewSelect([]string{"all-minilm:33m", "all-minilm:22m"}, func(selected string) {
 			fmt.Println("Selected embedding model:", selected)
 			setEmbeddingModelName(selected)
 		})

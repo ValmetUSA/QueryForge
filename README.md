@@ -57,16 +57,26 @@ ____
    ```
    go mod download
    ```
-3. Use the `cd` command again to naviagate to the `./src` folder.
 
-4. Run the following command to build an executable for your operating system:
+3. Run the following command to build an executable for your operating system:
   ```
-  go run .
+  go build ./src/
   ```
-5. Run the following command to run the program directly from source:
+
+4. Run the following command to run the program directly from source:
   ```
-  go build .
+  go run ./src/
   ```
+
+5 (Optional). If you want a single executable file, you can use the makefile to build the executable:
+  ```
+  make "YOUR_OS"
+  ```
+  > [!TIP]
+  > Replace "YOUR_OS" with your operating system (e.g. "windows", "linux", "macos"). 
+  > This will create a single executable file for your OS.
+  > This might also fix some issues with the Fyne framework not being able to find the correct resources,
+  > depending on how your OS is configured.
 ___
 
 To Do (Desciption, % of entire project):
