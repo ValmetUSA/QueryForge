@@ -4,6 +4,7 @@ go 1.23.2
 
 require (
 	fyne.io/fyne/v2 v2.5.2
+	github.com/ledongthuc/pdf v0.0.0-20240201131950-da5b75280b06
 	github.com/parakeet-nest/parakeet v0.2.2
 )
 
@@ -37,7 +38,7 @@ require (
 	github.com/rymdport/portal v0.2.6 // indirect
 	github.com/srwiley/oksvg v0.0.0-20221011165216-be6e8873101c // indirect
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef // indirect
-	github.com/stretchr/testify v1.8.4 // indirect
+	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/yuin/goldmark v1.7.4 // indirect
 	go.etcd.io/bbolt v1.3.11 // indirect
 	go.opentelemetry.io/otel v1.24.0 // indirect

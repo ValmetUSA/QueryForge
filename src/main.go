@@ -61,7 +61,7 @@ func main() {
 		// thanks to multi-threading built into Go.
 		go func() {
 			progress.SetValue(0.5)
-			Response, err := talkToOllama(question) // Pass question directly without using a pointer
+			Response, err := talkToOllama(question, tempFileLocation) // Pass question directly without using a pointer
 			if err != nil {
 				output.SetText(fmt.Sprintf("Error: %v", err))
 			} else {
@@ -74,7 +74,7 @@ func main() {
 
 	// About button to span the top of the window
 	aboutButton := widget.NewButtonWithIcon("About", theme.InfoIcon(), func() {
-		dialog.ShowInformation("About", "QueryForge by VII @ Valmet, Inc.\n\nA lightweight app for edge device RAG document searches.\n\nBuilt with ❤️ by Valmet USA - Atlanta, Georgia.", w)
+		dialog.ShowInformation("About", "QueryForge \n by VII @ Valmet, Inc.\n\nA lightweight app for edge device RAG document searches.\n\nBuilt with ❤️ by Valmet USA - Atlanta, Georgia.", w)
 	})
 
 	// Settings button with menu containing checkboxes - Not yet functional
@@ -110,7 +110,7 @@ func main() {
 	})
 
 	// Folder picker for selecting a directory to run the RAG search within
-	folderPicker := widget.NewButton("Select Folder", func() {
+	folderPicker := widget.NewButton("Select Folder \n (PDF, TXT Formats Only)", func() {
 		dialog.ShowFolderOpen(func(uri fyne.ListableURI, err error) {
 			if err != nil {
 				fmt.Println("Error opening folder:", err)
@@ -121,8 +121,34 @@ func main() {
 			}
 
 			// Start the chunking process for the RAG search - TODO: Implement chunking calls
-			//input.SetText(uri.String()) // Remove this line when the chunking process is implemented
 			fmt.Println("Selected folder:", uri.String())
+
+			// Start a goroutine to scan the directory and merge the files
+			go func() {
+				// Show a dialog to inform the user that the files are being processed
+				dialog.ShowInformation("Processing Files", "This may take a while - please wait...", w)
+
+				// Call mergeFilesToTemp and handle the result
+				tempFileLocation, err := mergeFilesToTemp(uri.Path())
+				if err != nil {
+					dialog.ShowError(err, w)
+					return
+				}
+
+				// Set the temporary file location for the AI query
+				setTempFileLocation(tempFileLocation)
+
+				// Notify the user of success and provide the location of the temporary file
+				dialog.ShowInformation("Files Processed", fmt.Sprintf("Files processed successfully."), w)
+
+				// // Clean up the temporary file after use
+				// err = deleteTempFile(tempFileLocation)
+				// if err != nil {
+				// 	dialog.ShowError(err, w)
+				// } else {
+				// 	fmt.Println("Temporary file deleted successfully.")
+				// }
+			}()
 		}, w)
 	})
 
