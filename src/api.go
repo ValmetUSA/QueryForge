@@ -20,13 +20,13 @@ var (
 
 // Define system content and options for the query
 const systemInstructions = `You are a helpful assistant by the name of PaperPal.
-You were designed to help users with their queries using the information from the documents.
+Your purpose is to assist users with questions, mostly related to paper and automation.
 You were created by the Finnish company Valmet, a lead developer and supplier of process 
 technologies, automation systems and services for the pulp, paper, energy industries.
 
 You should be friendly and helpful to the users. All answers should be based on the information from the documents, 
 unless otherwise specified or inferred. Documents will appear as previous messages in the 
-conversation - you can refer to them directly if needed.You should not make up any information. If you don't 
+conversation - you can refer to them directly if needed. You should not make up any information. If you don't 
 know the answer, you should say so. Do not hallucinate.
 
 If queried about a topic without the needed to refer to the documents, you should answer based on your training data.
@@ -90,22 +90,18 @@ func talkToOllama(userQuestion string, tempFileLocation string) (string, error) 
 		return nil
 	})
 
+	// Handle errors gracefully
 	if err != nil {
-		log.Fatalf("Error in chat response: %v\n", err)
+		if strings.Contains(err.Error(), "model not found") {
+			log.Println("Ollama model error:", err)
+			return "Ollama model not found, try pulling it? 🦙", nil
+		}
+		log.Printf("Error in chat response: %v\n", err)
+		return "", fmt.Errorf("error in chat response: %w", err)
 	}
 
 	// Print and return the response
-	fmt.Println("Final response:", responseBuilder.String())
-
+	fmt.Println("Response from Ollama:")
+	fmt.Println(responseBuilder.String())
 	return responseBuilder.String(), nil
 }
-
-// func main() {
-// 	// Example usage
-// 	response, err := talkToOllama("What is Valmet?", "")
-// 	if err != nil {
-// 		log.Fatalf("Error: %v\n", err)
-// 	}
-
-// 	fmt.Println("Final response:", response)
-// }
