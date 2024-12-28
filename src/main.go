@@ -83,25 +83,25 @@ func main() {
 		// Select base conversational model for the AI - selected 1b by default
 		pickBaseModel := widget.NewLabel("Base AI Model:")
 
-		// Select the model from the dropdown
-		selectModel := widget.NewSelect([]string{"llama3.2:1b", "llama3.2:3b"}, func(selected string) {
-			fmt.Println("Selected model:", selected)
-			setOllamaModelName(selected)
-		})
+		// // Select the model from the dropdown
+		// selectModel := widget.NewSelect([]string{"llama3.2:1b", "llama3.2:3b"}, func(selected string) {
+		// 	fmt.Println("Selected model:", selected)
+		// 	setOllamaModelName(selected)
+		// })
 
-		// Select the embedding model for the AI - selected 33m by default
-		pickEmbeddingModel := widget.NewLabel("Embedding Model:")
-		selectEmbeddingModel := widget.NewSelect([]string{"all-minilm:33m", "all-minilm:22m"}, func(selected string) {
-			fmt.Println("Selected embedding model:", selected)
-			setEmbeddingModelName(selected)
-		})
+		// // Select the embedding model for the AI - selected 33m by default
+		// pickEmbeddingModel := widget.NewLabel("Embedding Model:")
+		// selectEmbeddingModel := widget.NewSelect([]string{"all-minilm:33m", "all-minilm:22m"}, func(selected string) {
+		// 	fmt.Println("Selected embedding model:", selected)
+		// 	setEmbeddingModelName(selected)
+		// })
 
 		// Function to set the AI model from user preferences
 		settingsMenu := container.NewVBox(
 			pickBaseModel,
-			selectModel,
-			pickEmbeddingModel,
-			selectEmbeddingModel,
+			// selectModel,
+			// pickEmbeddingModel,
+			// selectEmbeddingModel,
 		)
 
 		// Show the settings menu with the selected AI models

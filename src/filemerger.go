@@ -126,7 +126,7 @@ func appendPdfFileContents(tempFile *os.File, filePath string) error {
 // deleteTempFile deletes the specified temporary file.
 func deleteTempFile() error {
 	if err := os.Remove(tempFileLocation); err != nil {
-		return fmt.Errorf("failed to delete temporary file %s: %w", err)
+		return fmt.Errorf("can not delete temporary file: %w", err)
 	}
 	return nil
 }
