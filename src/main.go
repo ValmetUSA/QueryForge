@@ -61,7 +61,7 @@ func main() {
 		// thanks to multi-threading built into Go.
 		go func() {
 			progress.SetValue(0.5)
-			Response, err := talkToOllama(question, tempFileLocation) // Pass question directly without using a pointer
+			Response, err := talkToOllama(question) // Pass question directly without using a pointer
 			if err != nil {
 				output.SetText(fmt.Sprintf("Error: %v", err))
 			} else {
@@ -83,11 +83,11 @@ func main() {
 		// Select base conversational model for the AI - selected 1b by default
 		pickBaseModel := widget.NewLabel("Base AI Model:")
 
-		// // Select the model from the dropdown
-		// selectModel := widget.NewSelect([]string{"llama3.2:1b", "llama3.2:3b"}, func(selected string) {
-		// 	fmt.Println("Selected model:", selected)
-		// 	setOllamaModelName(selected)
-		// })
+		// Select the model from the dropdown
+		selectModel := widget.NewSelect([]string{"qwen2.5:0.5b", "llama3.2:3b"}, func(selected string) {
+			fmt.Println("Selected model:", selected)
+			setOllamaModelName(selected)
+		})
 
 		// // Select the embedding model for the AI - selected 33m by default
 		// pickEmbeddingModel := widget.NewLabel("Embedding Model:")
@@ -99,7 +99,7 @@ func main() {
 		// Function to set the AI model from user preferences
 		settingsMenu := container.NewVBox(
 			pickBaseModel,
-			// selectModel,
+			selectModel,
 			// pickEmbeddingModel,
 			// selectEmbeddingModel,
 		)
@@ -120,7 +120,7 @@ func main() {
 				return
 			}
 
-			// Start the chunking process for the RAG search - TODO: Implement chunking calls
+			// Start the chunking process for the RAG search
 			fmt.Println("Selected folder:", uri.String())
 
 			// Start a goroutine to scan the directory and merge the files
@@ -171,7 +171,6 @@ func main() {
 	)
 
 	// This is the main content of the window
-	// It is a VBox with the following elements:
 	content := container.NewVBox(
 		image,
 		input,

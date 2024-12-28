@@ -10,7 +10,7 @@ import (
 	"github.com/ledongthuc/pdf"
 )
 
-var tempFileLocation = "" // Global variable to store the temporary file location
+var tempFileLocation string // Global variable to store the temporary file location
 
 // mergeFilesToTemp reads all files from the selected directory and outputs their
 // combined content into a single temporary file, and returns its location.
@@ -131,10 +131,12 @@ func deleteTempFile() error {
 	return nil
 }
 
+// getTempFileLocation returns the location of the temporary file.
 func getTempFileLocation() string {
 	return tempFileLocation
 }
 
+// setTempFileLocation sets the location of the temporary file.
 func setTempFileLocation(location string) {
 	tempFileLocation = location
 }
