@@ -6,6 +6,8 @@ package main
 
 import (
 	"fmt"
+	"io"
+	"os"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -18,7 +20,7 @@ import (
 
 func main() {
 	// Create a new Fyne application
-	a := app.New()
+	a := app.NewWithID("ValmetQueryForge")
 	w := a.NewWindow("Valmet QueryForge")
 	w.Resize(fyne.NewSize(200, 500)) // Edit this line to change the window size: width x height (pixels)
 
@@ -60,16 +62,55 @@ func main() {
 		// Note: This allows the UI to remain responsive while the AI is processing the question,
 		// thanks to multi-threading built into Go.
 		go func() {
+			progress.SetValue(0.25)
+
+			var question string
+
+			if tempFileLocation != "" {
+				// Try to open and read the file
+				file, err := os.Open(tempFileLocation)
+				if err != nil {
+					output.SetText(fmt.Sprintf("Error opening file: %v", err))
+					progress.Hide()
+					return
+				}
+				defer file.Close()
+
+				// Read the file content
+				content, err := io.ReadAll(file)
+				if err != nil {
+					output.SetText(fmt.Sprintf("Error reading file: %v", err))
+					progress.Hide()
+					return
+				}
+
+				// Construct the question with "CONTENT:" prefix
+				question = "CONTENT:\n" + string(content)
+			} else {
+				// No document specified, just use user input
+				question = input.Text
+				if question == "" {
+					output.SetText("Please enter a question or specify a document.")
+					progress.Hide()
+					return
+				}
+			}
+
 			progress.SetValue(0.5)
-			Response, err := talkToOllama(question) // Pass question directly without using a pointer
+
+			// Call the AI API
+			Response, err := talkToOllama(question)
 			if err != nil {
 				output.SetText(fmt.Sprintf("Error: %v", err))
 			} else {
-				output.SetText(Response) // Set text directly from the returned string
+				output.SetText(Response)
 			}
+
+			// Update and hide progress bar
 			progress.SetValue(1.0)
 			progress.Hide()
 		}()
+
 	})
 
 	// About button to span the top of the window

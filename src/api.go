@@ -18,9 +18,7 @@ var (
 	TRUE  = true
 )
 
-var ollamaModelName = "qwen2.5:0.5b"
-
-// var tempFileLocation string // Global variable to store the temporary file location
+var ollamaModelName = "llama3.2:1b"
 
 func setOllamaModelName(modelName string) {
 	ollamaModelName = modelName
@@ -57,30 +55,11 @@ func talkToOllama(userQuestion string) (string, error) {
 	parsedUrl, _ := url.Parse(ollamaRawUrl)
 	client := api.NewClient(parsedUrl, http.DefaultClient)
 
-	var messages []api.Message
-
-	// Read context from the temporary file if provided
-	var context []byte
-	if tempFileLocation != "" {
-		fmt.Println("DEBUG: Attempting to read file at:", tempFileLocation)
-		var err error
-		context, err = os.ReadFile(tempFileLocation)
-		if err != nil {
-			fmt.Printf("DEBUG: Error reading temp file (%s): %v\n", tempFileLocation, err)
-			context = []byte("Error reading context file, defaulting to empty content.")
-		}
-	} else {
-		fmt.Println("DEBUG: No temp file location provided, using default content.")
-		context = []byte("No context file provided.")
-	}
-
-	// Log the content read for debugging
-	fmt.Printf("DEBUG: Content from temp file:\n%s\n", string(context))
+	// Combine the user question and document content into a single query
 
 	// Prepare the messages for the API request
-	messages = []api.Message{
+	messages := []api.Message{
 		{Role: "system", Content: systemInstructions},
-		{Role: "system", Content: "CONTENT:\n" + string(context)},
 		{Role: "user", Content: userQuestion},
 	}
 
@@ -113,5 +92,26 @@ func talkToOllama(userQuestion string) (string, error) {
 		return "", err
 	}
 
+	// Remove the temporary file
+	if err := deleteTempFile(); err != nil {
+		log.Printf("Error deleting temporary file: %v\n", err)
+	}
+
+	// Return the response
 	return responseBuilder.String(), nil
 }
+
+// NOTE: Uncomment the main function to run the API standalone
+// func main() {
+// 	// Example usage
+// 	documentContent := "This is the document content that will be used in the query."
+// 	userQuestion := "What does this document say about automation in paper industries?"
+
+// 	response, err := talkToOllama(userQuestion, documentContent)
+// 	if err != nil {
+// 		log.Fatalf("Error communicating with Ollama: %v", err)
+// 	}
+
+// 	fmt.Println("\nResponse from Ollama:")
+// 	fmt.Println(response)
+// }

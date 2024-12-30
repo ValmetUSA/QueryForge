@@ -59,6 +59,7 @@ func mergeFilesToTemp(dir string) (string, error) {
 	return tempFile.Name(), nil
 }
 
+// appendFileContents appends the contents of a file to the temporary file.
 func appendFileContents(tempFile *os.File, filePath string) error {
 	ext := strings.ToLower(filepath.Ext(filePath))
 
@@ -92,6 +93,7 @@ func appendTextFileContents(tempFile *os.File, filePath string) error {
 	return nil
 }
 
+// appendPdfFileContents appends the contents of a PDF file.
 func appendPdfFileContents(tempFile *os.File, filePath string) error {
 	// Open the PDF file
 	f, r, err := pdf.Open(filePath)
