@@ -10,6 +10,7 @@ ___
 
 ## 📖 Table of Contents:
 * [Project Background](#-project-background)
+* [Screenshots](#-screenshots)
 * [How to Run](#-how-to-run)
 * [Building From Source](#%EF%B8%8F-building-from-source-advanced-users-only)
 
@@ -42,6 +43,15 @@ The core application is written in Go and utilizes the Fyne GUI framework for cr
 - Folder Selection: Users can select a folder to run the RAG search, our chunking process for document handling gets you an asnwer quickly.
 - Settings and Model Selection: The app allows users to select base conversational models and embedding models to customize the AI's behavior.
 ___
+
+## 📸 Screenshots 
+<div align="center">
+  
+<img src="assets/img/main_screenshot.png" alt="Valmet" width="350"/>
+
+<img src="assets/img/second_screenshot.png" alt="Valmet" width="350"/>
+
+</div>
 
 ## 🦙 How To Run
 
