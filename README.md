@@ -1,6 +1,6 @@
 <div align="center">
   
-# <img src="assets/img/valmet_logo_nobg.png" alt="Valmet" width="500" height="200"/>
+# <img src="assets/img/valmet_logo_nobg.png" alt="Valmet" width="400"/>
 # QueryForge
 Produced by [VII @ Valmet](https://www.valmet.com/automation/industrial-internet/)
 
