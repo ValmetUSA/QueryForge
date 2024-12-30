@@ -1,145 +1,117 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
-	"strconv"
+	"net/http"
+	"net/url"
+	"os"
 	"strings"
 
-	"github.com/parakeet-nest/parakeet/completion"
-	"github.com/parakeet-nest/parakeet/content"
-	"github.com/parakeet-nest/parakeet/embeddings"
-	"github.com/parakeet-nest/parakeet/enums/option"
-	"github.com/parakeet-nest/parakeet/llm"
+	"github.com/ollama/ollama/api"
 )
 
-// Some of this was sauced from here: https://github.com/parakeet-nest/parakeet/tree/main/examples/23-rag-with-chunker
+// Define constants for the query options
+var (
+	FALSE = false
+	TRUE  = true
+)
 
-// Constant declarations
-const defaultOllamaURL = "http://localhost:11434"
+var ollamaModelName = "llama3.2:1b"
 
-// Config holds the AI model configurations
-type Config struct {
-	ollamaModelName    string
-	embeddingModelName string
+func setOllamaModelName(modelName string) {
+	ollamaModelName = modelName
 }
 
-// Default configuration
-var config = Config{
-	ollamaModelName:    "llama3.2:1b",
-	embeddingModelName: "all-minilm:33m",
+func getOllamaModelName() string {
+	return ollamaModelName
 }
 
-// Setter function for the Ollama model name
-func setOllamaModelName(ollamaModelName string) {
-	config.ollamaModelName = ollamaModelName
-}
+// Define system content and options for the query
+const systemInstructions = `You are a helpful assistant by the name of PaperPal.
+Your purpose is to assist users with questions, mostly related to paper and automation.
+You were created by the Finnish company Valmet, a lead developer and supplier of process 
+technologies, automation systems and services for the pulp, paper, energy industries.
 
-// Setter function for the embedding model name
-func setEmbeddingModelName(embeddingModelName string) {
-	config.embeddingModelName = embeddingModelName
-}
+You should be friendly and helpful to the users. All answers should be based on the information from the documents, 
+unless otherwise specified or inferred. Documents will appear as previous messages in the 
+conversation - you can refer to them directly if needed. You should not make up any information. If you don't 
+know the answer, you should say so. Do not hallucinate.
 
-// Function to talk to Ollama
-func talkToOllama(userContent string) (string, error) {
+If queried about a topic without the needed to refer to the documents, you should answer based on your training data.
+Make these answers as helpful as possible - and try to relate the reply back to Valmet (for paper and automation only).
+`
 
-	// Create a store to save the embeddings
-	// Keep it in this function to let the garbage collector clean it up
-	// our users will likely only use this function once to get their answer
-	store := embeddings.MemoryVectorStore{
-		Records: make(map[string]llm.VectorRecord),
+func talkToOllama(userQuestion string) (string, error) {
+	ctx := context.Background()
+
+	// Set the Ollama host
+	ollamaRawUrl := os.Getenv("OLLAMA_HOST")
+	if ollamaRawUrl == "" {
+		ollamaRawUrl = "http://localhost:11434"
 	}
 
-	// Read from here how to do that: https://parakeet-nest.github.io/parakeet/embeddings/
-	rulesContent, err := content.ReadTextFile("./test_doc.txt")
-	if err != nil {
-		log.Printf("❌1: Failed to read document: %v", err)
-		return "", fmt.Errorf("failed to read document: %w", err)
-	}
-	chunks := content.ChunkText(rulesContent, 500, 200)
+	parsedUrl, _ := url.Parse(ollamaRawUrl)
+	client := api.NewClient(parsedUrl, http.DefaultClient)
 
-	// Create embeddings from documents and save them in the store
-	for idx, doc := range chunks {
-		fmt.Println("Creating embedding from document ", idx)
-		embedding, err := embeddings.CreateEmbedding(
-			defaultOllamaURL,
-			llm.Query4Embedding{
-				Model:  config.embeddingModelName,
-				Prompt: doc,
-			},
-			strconv.Itoa(idx),
-		)
-		if err != nil {
-			log.Printf("❌2: Failed to create embedding for document %d: %v", idx, err)
-			continue
-		}
-		store.Save(embedding)
+	// Combine the user question and document content into a single query
+
+	// Prepare the messages for the API request
+	messages := []api.Message{
+		{Role: "system", Content: systemInstructions},
+		{Role: "user", Content: userQuestion},
 	}
 
-	systemContent := `You are a helpful assistant by the name of PaperPal.
-	You were designed to help users with their queries using the information from the documents.
-	You were created by the Finnish company Valmet Oyj. You should be friendly and helpful to the users.
-	All answers should be based on the information from the documents, unless otherwise specified or inferred.
-	Documents will appear as previous messages in the conversation - you can refer to them directly if needed.
-	You should not make up any information. If you don't know the answer, you should say so. Do not halucinate.
-	If queried about a topic without the needed to refer to the documents, you should answer based on your training data.
-	Make these answers as helpful as possible - and try to relate the reply back to valmet (for paper and automation only).
-	`
-
-	// Create an embedding from the question
-	embeddingFromQuestion, err := embeddings.CreateEmbedding(
-		defaultOllamaURL,
-		llm.Query4Embedding{
-			Model:  config.embeddingModelName,
-			Prompt: userContent,
+	// Configure the chat request
+	req := &api.ChatRequest{
+		Model:    getOllamaModelName(),
+		Messages: messages,
+		Options: map[string]interface{}{
+			"temperature":    0.4,
+			"repeat_last_n":  2,
+			"repeat_penalty": 1.8,
+			"top_k":          10,
+			"top_p":          0.5,
 		},
-		"question",
-	)
-	if err != nil {
-		log.Printf("❌3: Failed to create embedding from question, is Ollama on? - %v", err)
-		return "", fmt.Errorf("failed to create embedding from question, is Ollama on? 🦙 \n\nError Data: %w", err)
+		Stream: &TRUE,
 	}
-	fmt.Println("🔎 searching for similarity...")
 
-	similarities, _ := store.SearchSimilarities(embeddingFromQuestion, 0.4)
+	// Capture response
+	responseBuilder := &strings.Builder{}
 
-	fmt.Println("🎉 similarities:", len(similarities))
-
-	documentsContent := embeddings.GenerateContentFromSimilarities(similarities)
-
-	options := llm.SetOptions(map[string]interface{}{
-		option.Temperature:   0.7,
-		option.RepeatLastN:   2,
-		option.RepeatPenalty: 2.0,
-		option.TopK:          10,
-		option.TopP:          0.5,
+	err := client.Chat(ctx, req, func(resp api.ChatResponse) error {
+		fmt.Print(resp.Message.Content)
+		responseBuilder.WriteString(resp.Message.Content)
+		return nil
 	})
 
-	query := llm.Query{
-		Model: config.ollamaModelName,
-		Messages: []llm.Message{
-			{Role: "system", Content: systemContent},
-			{Role: "system", Content: documentsContent},
-			{Role: "user", Content: userContent},
-		},
-		Options: options,
-	}
-
-	fmt.Println("🤖 answer:")
-
-	// Answer the question
-	var responseBuilder strings.Builder
-	_, err = completion.ChatStream(defaultOllamaURL, query,
-		func(answer llm.Answer) error {
-			fmt.Print(answer.Message.Content)
-			responseBuilder.WriteString(answer.Message.Content)
-			return nil
-		})
-
+	// Handle errors gracefully
 	if err != nil {
-		log.Printf("❌4: Failed to get response: %v", err)
-		return responseBuilder.String(), fmt.Errorf("failed to get response: %w", err)
+		log.Printf("Error during chat request: %v\n", err)
+		return "", err
 	}
 
+	// Remove the temporary file
+	if err := deleteTempFile(); err != nil {
+		log.Printf("Error deleting temporary file: %v\n", err)
+	}
+
+	// Return the response
 	return responseBuilder.String(), nil
 }
+
+// NOTE: Uncomment the main function to run the API standalone
+// func main() {
+// 	// Example usage
+// 	documentContent := "This is the document content that will be used in the query."
+// 	userQuestion := "What does this document say about automation in paper industries?"
+
+// 	response, err := talkToOllama(userQuestion, documentContent)
+// 	if err != nil {
+// 		log.Fatalf("Error communicating with Ollama: %v", err)
+// 	}
+
+// 	fmt.Println("\nResponse from Ollama:")
+// 	fmt.Println(response)
+// }

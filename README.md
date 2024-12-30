@@ -1,10 +1,10 @@
 <div align="center">
   
-# <img src="assets/img/valmet_logo_nobg.png" alt="Valmet" width="500" height="200"/>
+# <img src="assets/img/valmet_logo_nobg.png" alt="Valmet" width="400"/>
 # QueryForge
 Produced by [VII @ Valmet](https://www.valmet.com/automation/industrial-internet/)
 
-### A simple, yet robust, private local AI RAG chat application for Ollama - designed for conversations involving sensitive data.
+### A lightweight, yet robust, private local AI RAG chat application for Ollama - designed for conversations involving sensitive data.
 ___
 </div>
 
@@ -21,6 +21,8 @@ QueryForge is a lightweight, secure, and efficient local AI-driven RAG (Retrieva
 This project was developed by [Valmet of North America](https://www.valmet.com), under the [Valmet Industrial Internet](https://www.valmet.com/automation/industrial-internet/) division. Valmet is an international automation and services company that specializes in providing solutions to industries such as pulp, paper, and energy. With a strong focus on advancing sustainable practices, Valmet offers a range of technologies and services aimed at improving operational efficiency and environmental performance. Our expertise spans from process automation to machine vision systems, and we work with clients globally to implement cutting-edge solutions that drive innovation forward.
 
 Valmet’s commitment to integrating advanced technologies, such as artificial intelligence, with traditional industries allows them to support customers in transforming their operations. The development of QueryForge is part of Valmet's ongoing efforts to explore new frontiers in automation and AI applications, particularly in sectors that require high levels of data privacy and security. By focusing on local, private AI-driven solutions, Valmet aims to provide businesses with powerful tools for managing sensitive data while maintaining complete control over the information flow.
+
+This project utilizes direct injection for all user queries, ensuring that no data is sent to external servers or stored in the cloud. By keeping all operations local, QueryForge provides a secure environment for conducting conversations that involve confidential information. The application's intuitive interface, combined with its customizable AI model selection, makes it easy for users to interact with the AI and receive accurate, relevant responses quickly. With features such as progress feedback, clipboard integration, and folder selection, QueryForge offers a seamless user experience that prioritizes efficiency and privacy.
 
 #### Valmet of North America is based in Atlanta, Georgia, and is part of the broader Valmet global network, which itself spans over 30 countries worldwide.
 ___
@@ -42,7 +44,49 @@ The core application is written in Go and utilizes the Fyne GUI framework for cr
 ___
 
 ## 🦙 How To Run
-TBD
+
+### Windows:
+
+0. Make sure you have the latest version of Ollama installed on your machine. If you don't have Ollama, you can download it [by clicking here](https://ollama.com/). Optionally, you can use the './setup/windows_setup.bat' script to install Ollama on your machine. 
+To pull all the necessary files, you can use the following command:
+```
+ollama pull qwen2.5:0.5b
+ollama pull llama3.2:1b
+ollama pull llama3.2:3b
+ollama pull phi3:3.8b
+```
+1. Download the latest release from the [Releases page]() on GitHub.
+2. Extract the contents of the zip file to a folder on your computer.
+3. Run the `QueryForge.exe` file to start the application.
+
+### MacOS:
+0. Make sure you have the latest version of Ollama installed on your machine. If you don't have Ollama, you can download it [by clicking here](
+https://ollama.com/). Optionally, you can use the './setup/macos_setup.sh' script to install Ollama on your machine.
+To pull all the necessary files, you can use the following command:
+```
+ollama pull qwen2.5:0.5b
+ollama pull llama3.2:1b
+ollama pull llama3.2:3b
+ollama pull phi3:3.8b
+```
+1. Download the latest release from the [Releases page]() on GitHub.
+2. Extract the contents of the zip file to a folder on your computer.
+3. Run the `QueryForge` file to start the application.
+
+### Linux:
+0. Make sure you have the latest version of Ollama installed on your machine. If you don't have Ollama, you can download it [by clicking here](
+https://ollama.com/). Optionally, you can use the './setup/linux_setup.sh' script to install Ollama on your machine.
+To pull all the necessary files, you can use the following command:
+```
+ollama pull qwen2.5:0.5b
+ollama pull llama3.2:1b
+ollama pull llama3.2:3b
+ollama pull phi3:3.8b
+```
+1. Download the latest release from the [Releases page]() on GitHub.
+2. Extract the contents of the zip file to a folder on your computer.
+3. Run the `QueryForge` file to start the application.
+
 ____
 
 ## 👷‍♂️ Building From Source (Advanced Users Only!)
@@ -84,5 +128,5 @@ To Do (Desciption, % of entire project):
 - [x] Add RAG - 30%
 - [x] Finish front end - 20%
 - [ ] Finish documentation on GitHub, [add binaries](https://medium.com/@vijay1.chauhan/create-executable-with-icon-in-golang-6f236995d8f6) - 5%
-- [ ] Finish file picker with RAG, [along with adjustments](https://parakeet-nest.github.io/parakeet/embeddings/) - 10%
-- [ ] Write script to setup Ollama - 5%
+- [x] Finish file picker with RAG, [along with adjustments](https://parakeet-nest.github.io/parakeet/embeddings/) - 10%
+- [x] Write script to setup Ollama - 5%

@@ -6,6 +6,8 @@ package main
 
 import (
 	"fmt"
+	"io"
+	"os"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -18,7 +20,7 @@ import (
 
 func main() {
 	// Create a new Fyne application
-	a := app.New()
+	a := app.NewWithID("ValmetQueryForge")
 	w := a.NewWindow("Valmet QueryForge")
 	w.Resize(fyne.NewSize(200, 500)) // Edit this line to change the window size: width x height (pixels)
 
@@ -33,7 +35,7 @@ func main() {
 
 	// Create a MultiLineEntry for output with text wrapping enabled
 	output := widget.NewMultiLineEntry()
-	output.SetPlaceHolder("Response will appear here.")
+	output.SetPlaceHolder("Response will appear here. \n\nUse the 'Select Folder' button to specify a directory for RAG search. \n\n AI can still make mistakes, always verify any information given.")
 	output.Wrapping = fyne.TextWrapWord // Allow text wrapping to wrap at word boundaries
 
 	// Create a vertical scroll container for the output
@@ -60,21 +62,60 @@ func main() {
 		// Note: This allows the UI to remain responsive while the AI is processing the question,
 		// thanks to multi-threading built into Go.
 		go func() {
+			progress.SetValue(0.25)
+
+			var question string
+
+			if tempFileLocation != "" {
+				// Try to open and read the file
+				file, err := os.Open(tempFileLocation)
+				if err != nil {
+					output.SetText(fmt.Sprintf("Error opening file: %v", err))
+					progress.Hide()
+					return
+				}
+				defer file.Close()
+
+				// Read the file content
+				content, err := io.ReadAll(file)
+				if err != nil {
+					output.SetText(fmt.Sprintf("Error reading file: %v", err))
+					progress.Hide()
+					return
+				}
+
+				// Construct the question with "CONTENT:" prefix
+				question = "CONTENT:\n" + string(content)
+			} else {
+				// No document specified, just use user input
+				question = input.Text
+				if question == "" {
+					output.SetText("Please enter a question or specify a document.")
+					progress.Hide()
+					return
+				}
+			}
+
 			progress.SetValue(0.5)
-			Response, err := talkToOllama(question) // Pass question directly without using a pointer
+
+			// Call the AI API
+			Response, err := talkToOllama(question)
 			if err != nil {
 				output.SetText(fmt.Sprintf("Error: %v", err))
 			} else {
-				output.SetText(Response) // Set text directly from the returned string
+				output.SetText(Response)
 			}
+
+			// Update and hide progress bar
 			progress.SetValue(1.0)
 			progress.Hide()
 		}()
+
 	})
 
 	// About button to span the top of the window
 	aboutButton := widget.NewButtonWithIcon("About", theme.InfoIcon(), func() {
-		dialog.ShowInformation("About", "QueryForge by VII @ Valmet, Inc.\n\nA lightweight app for edge device RAG document searches.\n\nBuilt with ❤️ by Valmet USA - Atlanta, Georgia.", w)
+		dialog.ShowInformation("About", "QueryForge \n by VII @ Valmet, Inc.\n\nA lightweight app for edge device RAG document searches.\n\nBuilt with ❤️ by Valmet USA - Atlanta, Georgia.", w)
 	})
 
 	// Settings button with menu containing checkboxes - Not yet functional
@@ -84,24 +125,24 @@ func main() {
 		pickBaseModel := widget.NewLabel("Base AI Model:")
 
 		// Select the model from the dropdown
-		selectModel := widget.NewSelect([]string{"llama3.2:1b", "llama3.2:3b"}, func(selected string) {
+		selectModel := widget.NewSelect([]string{"qwen2.5:0.5b", "llama3.2:1b", "llama3.2:3b", "phi3:3.8b"}, func(selected string) {
 			fmt.Println("Selected model:", selected)
 			setOllamaModelName(selected)
 		})
 
-		// Select the embedding model for the AI - selected 33m by default
-		pickEmbeddingModel := widget.NewLabel("Embedding Model:")
-		selectEmbeddingModel := widget.NewSelect([]string{"all-minilm:33m", "all-minilm:22m"}, func(selected string) {
-			fmt.Println("Selected embedding model:", selected)
-			setEmbeddingModelName(selected)
-		})
+		// // Select the embedding model for the AI - selected 33m by default
+		// pickEmbeddingModel := widget.NewLabel("Embedding Model:")
+		// selectEmbeddingModel := widget.NewSelect([]string{"all-minilm:33m", "all-minilm:22m"}, func(selected string) {
+		// 	fmt.Println("Selected embedding model:", selected)
+		// 	setEmbeddingModelName(selected)
+		// })
 
 		// Function to set the AI model from user preferences
 		settingsMenu := container.NewVBox(
 			pickBaseModel,
 			selectModel,
-			pickEmbeddingModel,
-			selectEmbeddingModel,
+			// pickEmbeddingModel,
+			// selectEmbeddingModel,
 		)
 
 		// Show the settings menu with the selected AI models
@@ -110,7 +151,7 @@ func main() {
 	})
 
 	// Folder picker for selecting a directory to run the RAG search within
-	folderPicker := widget.NewButton("Select Folder", func() {
+	folderPicker := widget.NewButton("Select Folder \n (PDF, TXT Formats Only)", func() {
 		dialog.ShowFolderOpen(func(uri fyne.ListableURI, err error) {
 			if err != nil {
 				fmt.Println("Error opening folder:", err)
@@ -120,9 +161,35 @@ func main() {
 				return
 			}
 
-			// Start the chunking process for the RAG search - TODO: Implement chunking calls
-			//input.SetText(uri.String()) // Remove this line when the chunking process is implemented
+			// Start the chunking process for the RAG search
 			fmt.Println("Selected folder:", uri.String())
+
+			// Start a goroutine to scan the directory and merge the files
+			go func() {
+				// Show a dialog to inform the user that the files are being processed
+				dialog.ShowInformation("Processing Files", "This may take a while - please wait...", w)
+
+				// Call mergeFilesToTemp and handle the result
+				tempFileLocation, err := mergeFilesToTemp(uri.Path())
+				if err != nil {
+					dialog.ShowError(err, w)
+					return
+				}
+
+				// Set the temporary file location for the AI query
+				setTempFileLocation(tempFileLocation)
+
+				// Notify the user of success and provide the location of the temporary file
+				dialog.ShowInformation("Files Processed", fmt.Sprintf("Files processed successfully."), w)
+
+				// // Clean up the temporary file after use
+				// err = deleteTempFile(tempFileLocation)
+				// if err != nil {
+				// 	dialog.ShowError(err, w)
+				// } else {
+				// 	fmt.Println("Temporary file deleted successfully.")
+				// }
+			}()
 		}, w)
 	})
 
@@ -145,7 +212,6 @@ func main() {
 	)
 
 	// This is the main content of the window
-	// It is a VBox with the following elements:
 	content := container.NewVBox(
 		image,
 		input,
