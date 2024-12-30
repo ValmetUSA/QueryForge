@@ -2,7 +2,22 @@
   
 # <img src="assets/img/valmet_logo_nobg.png" alt="Valmet" width="400"/>
 # QueryForge
-Produced by [VII @ Valmet](https://www.valmet.com/automation/industrial-internet/)
+#### Produced by [VII @ Valmet](https://www.valmet.com/automation/industrial-internet/)
+![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white)
+
+<div style="display: flex; align-items: center; gap: 10px;">
+
+<a href="https://ollama.ai">
+  <img src="https://img.shields.io/badge/Powered%20by-Ollama-blue?style=flat-square" alt="Powered by Ollama">
+</a>
+
+<a href="https://www.gnu.org/licenses/gpl-3.0">
+  <img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License: GPL v3">
+</a>
+
+</div>
+
+
 
 ### A lightweight, yet robust, private local AI RAG chat application for Ollama - designed for conversations involving sensitive data.
 ___
@@ -34,14 +49,14 @@ ___
 - Easy Folder Selection: Choose a directory for running the RAG search, streamlining the process of retrieving relevant documents for AI-based responses.
 - Progress Feedback: A progress bar indicates the status of queries, giving users visibility into processing times.
 - Clipboard Integration: Copy and paste functionality is available directly from the toolbar, enhancing usability.
-- Simple Interface: Designed with an intuitive Fyne-based GUI for seamless interaction.
+- Simple Interface: Designed with an intuitive cross platform Fyne-based GUI for seamless interaction.
 
 ### Underlying Code
 The core application is written in Go and utilizes the Fyne GUI framework for creating a cross-platform desktop application. Here's an overview of some key components:
 - Fyne Framework: Used for creating the UI elements - it also ensures cross-platform compatibility.
 - Effortless AI Model Integration: The application queries an AI model in Ollama, which processes the input text and retrieves relevant responses. This keeps things simple for the end user, since Ollama handles model management - no AI interfacing is done manually by the user.
-- Folder Selection: Users can select a folder to run the RAG search, our chunking process for document handling gets you an asnwer quickly.
-- Settings and Model Selection: The app allows users to select base conversational models and embedding models to customize the AI's behavior.
+- Folder Selection: Users can select a folder to run the RAG search, our direct injection process for document handling gets you an asnwer quickly.
+- Settings and Model Selection: The app allows users to select base conversational mmodels to customize the AI's behavior.
 ___
 
 ## 📸 Screenshots 
@@ -57,7 +72,7 @@ ___
 
 ### Windows:
 
-0. Make sure you have the latest version of Ollama installed on your machine. If you don't have Ollama, you can download it [by clicking here](https://ollama.com/). Optionally, you can use the './setup/windows_setup.bat' script to install Ollama on your machine. 
+0. Make sure you have the latest version of Ollama installed on your machine. If you don't have Ollama, you can download it [by clicking here](https://ollama.com/). Optionally, you can use the `./setup/windows_setup.bat` script to install Ollama on your machine. 
 To pull all the necessary files, you can use the following command:
 ```
 ollama pull qwen2.5:0.5b
@@ -65,13 +80,13 @@ ollama pull llama3.2:1b
 ollama pull llama3.2:3b
 ollama pull phi3:3.8b
 ```
-1. Download the latest release from the [Releases page]() on GitHub.
+1. Download the latest release from the [Releases page](https://github.com/ValmetUSA/QueryForge/releases) on GitHub.
 2. Extract the contents of the zip file to a folder on your computer.
 3. Run the `QueryForge.exe` file to start the application.
 
 ### MacOS:
 0. Make sure you have the latest version of Ollama installed on your machine. If you don't have Ollama, you can download it [by clicking here](
-https://ollama.com/). Optionally, you can use the './setup/macos_setup.sh' script to install Ollama on your machine.
+https://ollama.com/). Optionally, you can use the `./setup/macos_setup.sh` script to install Ollama on your machine.
 To pull all the necessary files, you can use the following command:
 ```
 ollama pull qwen2.5:0.5b
@@ -79,13 +94,13 @@ ollama pull llama3.2:1b
 ollama pull llama3.2:3b
 ollama pull phi3:3.8b
 ```
-1. Download the latest release from the [Releases page]() on GitHub.
+1. Download the latest release from the [Releases page](https://github.com/ValmetUSA/QueryForge/releases) on GitHub.
 2. Extract the contents of the zip file to a folder on your computer.
 3. Run the `QueryForge` file to start the application.
 
 ### Linux:
 0. Make sure you have the latest version of Ollama installed on your machine. If you don't have Ollama, you can download it [by clicking here](
-https://ollama.com/). Optionally, you can use the './setup/linux_setup.sh' script to install Ollama on your machine.
+https://ollama.com/). Optionally, you can use the `./setup/linux_setup.sh` script to install Ollama on your machine.
 To pull all the necessary files, you can use the following command:
 ```
 ollama pull qwen2.5:0.5b
@@ -93,7 +108,7 @@ ollama pull llama3.2:1b
 ollama pull llama3.2:3b
 ollama pull phi3:3.8b
 ```
-1. Download the latest release from the [Releases page]() on GitHub.
+1. Download the latest release from the [Releases page](https://github.com/ValmetUSA/QueryForge/releases) on GitHub.
 2. Extract the contents of the zip file to a folder on your computer.
 3. Run the `QueryForge` file to start the application.
 
@@ -131,12 +146,3 @@ ____
   > This will create a single executable file for your OS.
   > This might also fix some issues with the Fyne framework not being able to find the correct resources,
   > depending on how your OS is configured.
-___
-
-To Do (Desciption, % of entire project):
-- [x] Get UI and Framework done - 30%
-- [x] Add RAG - 30%
-- [x] Finish front end - 20%
-- [ ] Finish documentation on GitHub, [add binaries](https://medium.com/@vijay1.chauhan/create-executable-with-icon-in-golang-6f236995d8f6) - 5%
-- [x] Finish file picker with RAG, [along with adjustments](https://parakeet-nest.github.io/parakeet/embeddings/) - 10%
-- [x] Write script to setup Ollama - 5%
