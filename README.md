@@ -4,7 +4,7 @@
 # QueryForge
 Produced by [VII @ Valmet](https://www.valmet.com/automation/industrial-internet/)
 
-### A simple, yet robust, private local AI RAG chat application for Ollama - designed for conversations involving sensitive data.
+### A lightweight, yet robust, private local AI RAG chat application for Ollama - designed for conversations involving sensitive data.
 ___
 </div>
 
