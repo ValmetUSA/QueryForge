@@ -35,7 +35,7 @@ func main() {
 
 	// Create a MultiLineEntry for output with text wrapping enabled
 	output := widget.NewMultiLineEntry()
-	output.SetPlaceHolder("Response will appear here.")
+	output.SetPlaceHolder("Response will appear here. \n\nUse the 'Select Folder' button to specify a directory for RAG search. \n\n AI can still make mistakes, always verify any information given.")
 	output.Wrapping = fyne.TextWrapWord // Allow text wrapping to wrap at word boundaries
 
 	// Create a vertical scroll container for the output
