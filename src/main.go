@@ -125,7 +125,7 @@ func main() {
 		pickBaseModel := widget.NewLabel("Base AI Model:")
 
 		// Select the model from the dropdown
-		selectModel := widget.NewSelect([]string{"qwen2.5:0.5b", "llama3.2:3b"}, func(selected string) {
+		selectModel := widget.NewSelect([]string{"qwen2.5:0.5b", "llama3.2:1b", "llama3.2:3b", "phi3:3.8b"}, func(selected string) {
 			fmt.Println("Selected model:", selected)
 			setOllamaModelName(selected)
 		})

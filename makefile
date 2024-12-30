@@ -6,10 +6,10 @@ default:
 	go install fyne.io/fyne/v2/cmd/fyne@latest
 	go mod download
 	ollama serve &
+	ollama pull qwen2.5:0.5b
 	ollama pull llama3.2:1b
 	ollama pull llama3.2:3b
-	ollama pull all-minilm:22m
-	ollama pull all-minilm:33m
+	ollama pull phi3:3.8b
 
 macos:
 	@echo "Building the Valmet QueryForge project for MacOS."
