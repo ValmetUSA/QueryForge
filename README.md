@@ -59,7 +59,7 @@ The core application is written in Go and utilizes the Fyne GUI framework for cr
 - Settings and Model Selection: The app allows users to select base conversational mmodels to customize the AI's behavior.
 
 ### Ollama Configuration
-QueryForge expects that Ollama will be running on `localhost:11434`. If this is not the port for your Ollama configuration, or you if you want to connect to a remote IP - please edit the `./src/api.go` file and recomile the program using the build instructions provided below.
+QueryForge expects that Ollama will be running on `localhost:11434`. If this is not the port for your Ollama configuration, or you if you want to connect to a remote IP - please edit the `./src/api.go` file and recompile the program using the build instructions provided below.
 ___
 
 ## 📸 Screenshots 
